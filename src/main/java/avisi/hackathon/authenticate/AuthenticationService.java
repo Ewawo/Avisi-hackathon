@@ -34,7 +34,9 @@ public class AuthenticationService {
         }
 
         LoginResponseDto loginResponse = new LoginResponseDto();
-        loginResponse.setToken(generateToken());
+        String token = generateToken();
+        loginResponse.setToken(token);
+        authenticationDao.insertToken(email, token);
 
         return loginResponse;
     }
@@ -59,5 +61,10 @@ public class AuthenticationService {
             token = UUID.randomUUID().toString();
         } while (authenticationDao.tokenExists(token));
         return token;
+    }
+
+    public void register(String firstname, String surname, String email, String password, boolean isTeacher) {
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        authenticationDao.createUser(firstname, surname, email, hashedPassword, isTeacher);
     }
 }

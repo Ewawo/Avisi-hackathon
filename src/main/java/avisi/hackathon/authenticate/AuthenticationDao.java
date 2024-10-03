@@ -1,20 +1,184 @@
 package avisi.hackathon.authenticate;
 
+import avisi.hackathon.database.DaoUtils;
+import avisi.hackathon.database.databaseConnection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.sql.*;
 
 @Repository
 public class AuthenticationDao {
 
-    public String findPassword(String email) {
-        //TODO
-        return "password";
+    private final databaseConnection databaseConnection;
+
+    @Autowired
+    public AuthenticationDao() {
+        this.databaseConnection = new databaseConnection();
     }
+
+
+    public String findPassword(String email) {
+        String sql = "SELECT wachtwoord FROM User WHERE email = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, email);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getString("wachtwoord");
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        } finally {
+            DaoUtils.closeResources(resultSet, statement, connection);
+        }
+    }
+
 
     public boolean tokenExists(String token) {
-        //TODO
-        return false;
+        String sql = "SELECT COUNT(*) FROM UserSession WHERE sessionId = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, token);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        } finally {
+            DaoUtils.closeResources(resultSet, statement, connection);
+        }
     }
 
+
+
     public void destroySession(String token) {
+        String sql = "DELETE FROM UserSession WHERE sessionId = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            // Get a connection to the database
+            connection = databaseConnection.getDatabaseConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, token);  // Set the token in the query
+
+            int rowsAffected = statement.executeUpdate(); // Execute the delete operation
+
+            if (rowsAffected == 0) {
+                // If no rows were affected, it means the token was not found
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found for the provided token");
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        } finally {
+            // Close resources to avoid memory leaks
+            DaoUtils.closeResources(statement, connection);
+        }
     }
+
+
+    public void insertToken(String email, String token) {
+        String sqlInsertToken = "INSERT INTO UserSession (sessionId, userId) VALUES (?, ?)";
+        String sqlFindUserId = "SELECT userId FROM User WHERE email = ?";
+        Connection connection = null;
+        PreparedStatement insertTokenStatement = null;
+        PreparedStatement findUserIdStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            findUserIdStatement = connection.prepareStatement(sqlFindUserId);
+            findUserIdStatement.setString(1, email);
+            resultSet = findUserIdStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int userId = resultSet.getInt("userId");
+
+                insertTokenStatement = connection.prepareStatement(sqlInsertToken);
+                insertTokenStatement.setString(1, token);
+                insertTokenStatement.setInt(2, userId);
+                insertTokenStatement.executeUpdate();
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found for the provided email");
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        } finally {
+            DaoUtils.closeResources(resultSet, findUserIdStatement, null);
+            DaoUtils.closeResources(insertTokenStatement, connection);
+        }
+    }
+
+
+
+    public void createUser(String firstname, String surname, String email, String hashedPassword, boolean isTeacher) {
+        String userSql = "INSERT INTO User (firstname, surname, email, wachtwoord, isTeacher) VALUES (?, ?, ?, ?, ?)";
+        String studentSql = "INSERT INTO Student (userId) VALUES (?)";
+        Connection connection = null;
+        PreparedStatement userStatement = null;
+        PreparedStatement studentStatement = null;
+        ResultSet generatedKeys = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            connection.setAutoCommit(false);
+
+            userStatement = connection.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
+            userStatement.setString(1, firstname);
+            userStatement.setString(2, surname);
+            userStatement.setString(3, email);
+            userStatement.setString(4, hashedPassword);
+            userStatement.setBoolean(5, isTeacher);
+            userStatement.executeUpdate();
+
+            generatedKeys = userStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int userId = generatedKeys.getInt(1);
+
+                if (!isTeacher) {
+                    studentStatement = connection.prepareStatement(studentSql);
+                    studentStatement.setInt(1, userId);
+                    studentStatement.executeUpdate();
+                }
+            } else {
+                connection.rollback();
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to insert user.");
+            }
+
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    rollbackException.printStackTrace();
+                }
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        } finally {
+            DaoUtils.closeResources(generatedKeys, userStatement, null);
+            DaoUtils.closeResources(studentStatement, connection);
+        }
+    }
+
+
 }
