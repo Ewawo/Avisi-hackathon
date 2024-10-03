@@ -14,4 +14,7 @@ public class AuthenticationDao {
         //TODO
         return false;
     }
+
+    public void destroySession(String token) {
+    }
 }

@@ -5,6 +5,7 @@ import avisi.hackathon.dtos.LoginRequestDto;
 import avisi.hackathon.dtos.LoginResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,12 @@ public class AuthenticationResource {
     public ResponseEntity<LoginResponseDto> login (@RequestBody LoginRequestDto loginRequest) {
         LoginResponseDto loginResponse = authenticationService.authenticate(loginRequest.getEmail(), loginRequest.getPassword());
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @Authenticate
+    @DeleteMapping
+    public HttpStatus logout() {
+        return HttpStatus.NO_CONTENT;
     }
 
     @Authenticate
