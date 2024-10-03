@@ -1,7 +1,8 @@
 package avisi.hackathon.authenticate;
 
 import avisi.hackathon.database.DaoUtils;
-import avisi.hackathon.database.databaseConnection;
+import avisi.hackathon.database.DatabaseConnection;
+import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
@@ -12,11 +13,11 @@ import java.sql.*;
 @Repository
 public class AuthenticationDao {
 
-    private final databaseConnection databaseConnection;
+    private final DatabaseConnection databaseConnection;
 
     @Autowired
-    public AuthenticationDao() {
-        this.databaseConnection = new databaseConnection();
+    public AuthenticationDao(DatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
     }
 
 
@@ -35,7 +36,7 @@ public class AuthenticationDao {
             if (resultSet.next()) {
                 return resultSet.getString("wachtwoord");
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                throw new UnauthorizedException("User not found");
             }
         } catch (SQLException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);

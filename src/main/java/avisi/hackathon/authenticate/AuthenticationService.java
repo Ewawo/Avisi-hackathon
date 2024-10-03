@@ -26,13 +26,17 @@ public class AuthenticationService {
         try {
             // Check if the password matches the hash
             if (passwordHash == null || !BCrypt.checkpw(password, passwordHash)) {
+                System.out.println("authenticate 1 " + email + " " + password);
                 throw new UnauthorizedException("Invalid email or password");
             }
         } catch (IllegalArgumentException e) {
+            System.out.println("authenticate 2 " + email + " " + password);
             System.out.println("BCrypt encountered an invalid salt: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            throw new UnauthorizedException("Invalid email or password");
         }
 
+
+        System.out.println("authenticate 3 " + email + " " + password);
         LoginResponseDto loginResponse = new LoginResponseDto();
         String token = generateToken();
         loginResponse.setToken(token);

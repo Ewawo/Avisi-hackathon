@@ -1,10 +1,9 @@
 package avisi.hackathon.studentOverzicht;
 
-import avisi.hackathon.database.databaseConnection;
+import avisi.hackathon.database.DatabaseConnection;
 import avisi.hackathon.dtos.CriteriumDto;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,7 +15,7 @@ import java.util.List;
 public class StudentenOverzichtDao {
 
 
-    private databaseConnection databaseConnection = new databaseConnection();
+    private DatabaseConnection databaseConnection = new DatabaseConnection();
 
 
     public List<CriteriumDto> getAllCriteriums() throws SQLException {
