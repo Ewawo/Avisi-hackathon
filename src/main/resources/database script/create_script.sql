@@ -70,6 +70,14 @@ create table Criteria (
     workProcessId int not null,
     name varchar(50) not null,
     description varchar(500) not null,
+    onvoldoende varchar(50),
+    orientatieVoldoende varchar(50),
+    orientatieGoed varchar(50),
+    developerVoldoende varchar(50),
+    developerGoed varchar(50),
+    expertVoldoende varchar(50),
+    expertGoed varchar(50),
+
     constraint pk_criteria primary key (criteriaId),
     constraint fk_criteriaWorkProcessId foreign key (workProcessId) references WorkProcess(workProcessId)
 );
@@ -116,3 +124,9 @@ create table UserSession (
     userId int not null,
     constraint pk_userSession primary key (sessionId)
 );
+
+
+
+insert into coretask values (1,"coretask","description");
+insert into workprocess values(1,1,"Workproces","description");
+insert into criteria values(1,1,"Criteria","description","Onvoldoende","orientatievoldoende","orientatiegoed","developerVoldoende","developerGoed","expertVoldoende","expertGoed")

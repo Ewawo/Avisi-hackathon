@@ -7,5 +7,5 @@ public class WerkprocessDto {
     private int id;
     private String name;
     private String description;
-    private CriteriumDto[] criterium;
+    private CriteriumCollectionDto criteriumCollectionDto;
 }

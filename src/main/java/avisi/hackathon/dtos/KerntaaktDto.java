@@ -6,5 +6,5 @@ import lombok.Data;
 public class KerntaaktDto {
     private int id;
     private String name;
-    private WerkprocessDto[] werkprocessen;
+    private WerkprocessCollectionDto werkprocessCollectionDto;
 }
