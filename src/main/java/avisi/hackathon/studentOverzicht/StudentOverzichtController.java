@@ -18,7 +18,7 @@ public class StudentOverzichtController {
     @Autowired
     private StudentOverzichtService studentOverzichtService;
 
-    @GetMapping("/Criteriums")
+    @GetMapping("/CriteriaAll")
     public ResponseEntity<List<CriteriumDto>> getAllCriteriums() throws SQLException {
         List<CriteriumDto> criteriumDTOList = studentOverzichtService.getAllCriteriums();
         return ResponseEntity.ok(criteriumDTOList);

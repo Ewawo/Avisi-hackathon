@@ -7,10 +7,10 @@ import java.sql.SQLException;
 public class databaseConnection {
 
     public Connection getDatabaseConnection() throws SQLException {
-        //al dbProperties = DbProperties("database.properties")
+
         String connectionString = "jdbc:mysql://localhost:3306/hackathon?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=TRUE";
-        String user = "username";
-        String password = "password";
+        String user = "root";
+        String password = "admin";
         return DriverManager.getConnection(connectionString, user, password);
     }
 }

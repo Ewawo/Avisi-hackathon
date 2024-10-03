@@ -26,7 +26,7 @@ public class StudentenOverzichtDao {
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             CriteriumDto criterium = new CriteriumDto();
-            criterium.setId(resultSet.getInt("id"));
+            criterium.setId(resultSet.getInt("criteriaId"));
             criterium.setName(resultSet.getString("name"));
             criteriums.add(criterium);
         }
