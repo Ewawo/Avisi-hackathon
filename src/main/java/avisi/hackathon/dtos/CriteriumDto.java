@@ -13,4 +13,6 @@ public class CriteriumDto {
     private String developerGoed;
     private String expertVoldoende;
     private String expertGoed;
+    private String kerntaak;
+    private String werkprocess;
 }
