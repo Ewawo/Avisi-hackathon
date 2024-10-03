@@ -15,7 +15,7 @@ public class PoOverzichtResource {
     @Autowired
     private PoOverzichtService poOverzichtService;
 
-    @GetMapping("/students")
+    @GetMapping("api/students")
     public ResponseEntity<List<StudentDTO>> studentOverviewResource() {
         List<StudentDTO> studentDTOList = poOverzichtService.studentOverviewService();
         return ResponseEntity.ok(studentDTOList);
