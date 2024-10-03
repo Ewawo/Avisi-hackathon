@@ -1,6 +1,7 @@
 package avisi.hackathon.authenticate;
 
 import avisi.hackathon.dtos.LoginResponseDto;
+import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -25,7 +26,7 @@ public class AuthenticationService {
         try {
             // Check if the password matches the hash
             if (passwordHash == null || !BCrypt.checkpw(password, passwordHash)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+                throw new UnauthorizedException("Invalid email or password");
             }
         } catch (IllegalArgumentException e) {
             System.out.println("BCrypt encountered an invalid salt: " + e.getMessage());
@@ -42,6 +43,14 @@ public class AuthenticationService {
 
     public void verifyToken(String token) {
         // Implementation
+        if(!authenticationDao.tokenExists(token)) {
+            throw new UnauthorizedException("Invalid token");
+
+        }
+    }
+
+    public void destroySession(String token) {
+        authenticationDao.destroySession(token);
     }
 
     private String generateToken() {
