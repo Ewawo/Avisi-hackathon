@@ -15,7 +15,10 @@ public class AuthenticationService {
     }
 
     public LoginResponseDto authenticate(String email, String password) {
-        return new LoginResponseDto();
+        var response = new LoginResponseDto();
+        response.setToken("1234");
+        response.setRole("USER");
+        return response;
     }
 
     public void verifyToken(String token) {
