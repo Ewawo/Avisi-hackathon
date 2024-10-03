@@ -4,4 +4,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AuthenticationDao {
+
+    public String findPassword(String email) {
+        //TODO
+        return "password";
+    }
+
+    public boolean tokenExists(String token) {
+        //TODO
+        return false;
+    }
 }
