@@ -110,3 +110,9 @@ create table StudentGrade (
     constraint fk_studentGradeCriteriaId foreign key (criteriaId) references Criteria(criteriaId),
     constraint fk_studentGradeGradeId foreign key (gradeId) references Grade(gradeId)
 );
+
+create table UserSession (
+    sessionId varchar(255) not null,
+    userId int not null,
+    constraint pk_userSession primary key (sessionId)
+);
