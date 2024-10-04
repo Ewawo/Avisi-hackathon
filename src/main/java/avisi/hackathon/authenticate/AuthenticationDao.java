@@ -2,6 +2,7 @@ package avisi.hackathon.authenticate;
 
 import avisi.hackathon.database.DaoUtils;
 import avisi.hackathon.database.DatabaseConnection;
+import avisi.hackathon.exceptions.NotFoundException;
 import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -72,6 +73,7 @@ public class AuthenticationDao {
 
 
     public void destroySession(String token) {
+        System.out.println("token: " + token);
         String sql = "DELETE FROM UserSession WHERE sessionId = ?";
         Connection connection = null;
         PreparedStatement statement = null;
@@ -86,7 +88,7 @@ public class AuthenticationDao {
 
             if (rowsAffected == 0) {
                 // If no rows were affected, it means the token was not found
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Session not found for the provided token");
+                throw new NotFoundException("Session not found for the provided token");
             }
         } catch (SQLException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
@@ -129,10 +131,31 @@ public class AuthenticationDao {
         }
     }
 
+    public int getUserId(String token) {
+        String sql = "SELECT userId FROM UserSession WHERE sessionId = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, token);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt("userId");
+            } else {
+                throw new NotFoundException("User not found for the provided token");
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
+        }
+    }
 
 
-    public void createUser(String firstname, String surname, String email, String hashedPassword, boolean isTeacher) {
-        String userSql = "INSERT INTO User (firstname, surname, email, wachtwoord, isTeacher) VALUES (?, ?, ?, ?, ?)";
+    public void createUser(String firstname, String surname, String email, String hashedPassword, boolean isTeacher, int roleId) {
+        String userSql = "INSERT INTO User (firstname, surname, email, wachtwoord, isTeacher, roleId) VALUES (?, ?, ?, ?, ?, ?)";
         String studentSql = "INSERT INTO Student (userId) VALUES (?)";
         Connection connection = null;
         PreparedStatement userStatement = null;
@@ -149,6 +172,7 @@ public class AuthenticationDao {
             userStatement.setString(3, email);
             userStatement.setString(4, hashedPassword);
             userStatement.setBoolean(5, isTeacher);
+            userStatement.setInt(6, roleId);
             userStatement.executeUpdate();
 
             generatedKeys = userStatement.getGeneratedKeys();

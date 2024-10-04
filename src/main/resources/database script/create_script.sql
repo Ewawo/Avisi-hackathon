@@ -3,6 +3,14 @@ drop database if exists hackathon;
 create database hackathon;
 use hackathon;
 
+
+-- Role Table
+create table Role (
+    roleId int auto_increment not null,
+    name varchar(50) not null,
+    constraint pk_roleId primary key (roleId)
+);
+
 -- User Table (shared for Teacher/Student)
 create table User (
     userId int auto_increment not null,
@@ -11,15 +19,17 @@ create table User (
     email varchar(50) not null,
     wachtwoord varchar(255) not null,
     isTeacher boolean not null,
-    constraint pk_user primary key (userId)
+    roleId int not null,
+    constraint pk_user primary key (userId),
+    constraint fk_UserRoleId foreign key (roleId) references Role(roleId)
 );
 
--- Role Table
-create table Role (
-    roleId int auto_increment not null,
-    name varchar(50) not null,
-    constraint pk_roleId primary key (roleId)
-);
+
+insert into Role (name) values
+                                    ('student'),
+                                    ('lbc'),
+                                    ('po'),
+                                    ('beheerder');
 
 -- Teacher Table
 create table Teacher (
@@ -125,8 +135,11 @@ create table UserSession (
     constraint pk_userSession primary key (sessionId)
 );
 
+# insert into CoreTask values (1,'coretask','description');
+# insert into WorkProcess values(1,1,'Workproces','description');
+# insert into Criteria values(1,1,'Criteria',"description","Onvoldoende","orientatievoldoende","orientatiegoed","developerVoldoende","developerGoed","expertVoldoende","expertGoed")
 
 
-insert into coretask values (1,"coretask","description");
-insert into workprocess values(1,1,"Workproces","description");
-insert into criteria values(1,1,"Criteria","description","Onvoldoende","orientatievoldoende","orientatiegoed","developerVoldoende","developerGoed","expertVoldoende","expertGoed")
+select * from UserSession
+
+delete from UserSession

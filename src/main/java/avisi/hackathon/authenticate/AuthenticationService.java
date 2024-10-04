@@ -3,10 +3,8 @@ package avisi.hackathon.authenticate;
 import avisi.hackathon.dtos.LoginResponseDto;
 import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -26,23 +24,23 @@ public class AuthenticationService {
         try {
             // Check if the password matches the hash
             if (passwordHash == null || !BCrypt.checkpw(password, passwordHash)) {
-                System.out.println("authenticate 1 " + email + " " + password);
                 throw new UnauthorizedException("Invalid email or password");
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("authenticate 2 " + email + " " + password);
             System.out.println("BCrypt encountered an invalid salt: " + e.getMessage());
             throw new UnauthorizedException("Invalid email or password");
         }
 
-
-        System.out.println("authenticate 3 " + email + " " + password);
         LoginResponseDto loginResponse = new LoginResponseDto();
         String token = generateToken();
         loginResponse.setToken(token);
         authenticationDao.insertToken(email, token);
 
         return loginResponse;
+    }
+
+    public void logout(String token) {
+        authenticationDao.destroySession(token);
     }
 
 
@@ -67,8 +65,12 @@ public class AuthenticationService {
         return token;
     }
 
-    public void register(String firstname, String surname, String email, String password, boolean isTeacher) {
+    public void register(String firstname, String surname, String email, String password, boolean isTeacher, int roleId) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        authenticationDao.createUser(firstname, surname, email, hashedPassword, isTeacher);
+        authenticationDao.createUser(firstname, surname, email, hashedPassword, isTeacher, roleId);
+    }
+
+    public int getUserId(String token) {
+        return authenticationDao.getUserId(token);
     }
 }

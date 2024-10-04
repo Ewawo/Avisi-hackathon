@@ -1,8 +1,5 @@
-package nl.han.oose.colossus.backend.bakery2.exceptions;
+package avisi.hackathon.exceptions;
 
-import avisi.hackathon.exceptions.ForbiddenException;
-import avisi.hackathon.exceptions.NotFoundException;
-import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
