@@ -2,6 +2,7 @@ package avisi.hackathon.authenticate;
 
 import avisi.hackathon.database.DaoUtils;
 import avisi.hackathon.database.DatabaseConnection;
+import avisi.hackathon.dtos.LoginResponseDto;
 import avisi.hackathon.exceptions.NotFoundException;
 import avisi.hackathon.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,31 @@ public class AuthenticationDao {
         } finally {
             // Close resources to avoid memory leaks
             DaoUtils.closeResources(statement, connection);
+        }
+    }
+
+    public String getUser(String token) {
+        String sql = "SELECT r.name FROM UserSession s join User u on s.userId = u.userId join Role r on u.roleId = r.roleId WHERE s.sessionId = ?";
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = databaseConnection.getDatabaseConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, token);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                var id = resultSet.getString("name");
+                System.out.println(id);
+                return id;
+            } else {
+                throw new NotFoundException("User not found for the provided token");
+            }
+        } catch (SQLException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error: " + e.getMessage(), e);
         }
     }
 

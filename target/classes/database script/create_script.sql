@@ -105,6 +105,8 @@ create table StudentPeriodPlan (
     criteriaId int not null,
     periodId int not null,
     isCompleted boolean default false,
+    schatting varchar(50) not null,
+    verantwoording varchar(500) not null,
     constraint pk_studentPeriodPlan primary key (studentId, criteriaId, periodId),
     constraint fk_studentPeriodPlanStudentId foreign key (studentId) references Student(studentId),
     constraint fk_studentPeriodPlanCriteriaId foreign key (criteriaId) references Criteria(criteriaId),
@@ -139,7 +141,24 @@ create table UserSession (
 # insert into WorkProcess values(1,1,'Workproces','description');
 # insert into Criteria values(1,1,'Criteria',"description","Onvoldoende","orientatievoldoende","orientatiegoed","developerVoldoende","developerGoed","expertVoldoende","expertGoed")
 
+insert into CoreTask values (1,"coretask","description");
+insert into WorkProcess values(1,1,"Workproces","description");
+insert into Criteria values(1,1,"Criteria","description","Onvoldoende","orientatievoldoende","orientatiegoed","developerVoldoende","developerGoed","expertVoldoende","expertGoed")
 
-select * from UserSession
 
-delete from UserSession
+INSERT INTO CoreTask VALUES (2, 'coretask2', 'description of coretask2');
+INSERT INTO CoreTask VALUES (3, 'coretask3', 'description of coretask3');
+INSERT INTO CoreTask VALUES (4, 'coretask4', 'description of coretask4');
+INSERT INTO CoreTask VALUES (5, 'coretask5', 'description of coretask5');
+INSERT INTO WorkProcess VALUES (2, 2, 'Workprocess2', 'description of workprocess2');
+INSERT INTO WorkProcess VALUES (3, 3, 'Workprocess3', 'description of workprocess3');
+INSERT INTO WorkProcess VALUES (4, 4, 'Workprocess4', 'description of workprocess4');
+INSERT INTO WorkProcess VALUES (5, 5, 'Workprocess5', 'description of workprocess5');
+INSERT INTO Criteria VALUES (2, 2, 'Criteria2', 'description of criteria2', "Onvoldoende", "orientatievoldoende", "orientatiegoed", "developerVoldoende", "developerGoed", "expertVoldoende", "expertGoed");
+INSERT INTO Criteria VALUES (3, 3, 'Criteria3', 'description of criteria3', "Onvoldoende", "orientatievoldoende", "orientatiegoed", "developerVoldoende", "developerGoed", "expertVoldoende", "expertGoed");
+INSERT INTO Criteria VALUES (4, 4, 'Criteria4', 'description of criteria4', "Onvoldoende", "orientatievoldoende", "orientatiegoed", "developerVoldoende", "developerGoed", "expertVoldoende", "expertGoed");
+INSERT INTO Criteria VALUES (5, 5, 'Criteria5', 'description of criteria5', "Onvoldoende", "orientatievoldoende", "orientatiegoed", "developerVoldoende", "developerGoed", "expertVoldoende", "expertGoed");
+
+select * from UserSession;
+
+SELECT r.name FROM UserSession s join User u on s.userId = u.userId join Role r on u.roleId = r.roleId WHERE s.sessionId = '8b3e83e9-8db3-4608-b378-9b06424d86f2'

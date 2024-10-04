@@ -12,17 +12,17 @@ import java.util.List;
 public class StudentOverzichtService {
 
     @Autowired
-    private StudentenOverzichtDao studentenOverzichtDao;
+    private StudentOverzichtDao studentOverzichtDao;
 
     public List<CriteriumDto> getAllCriteriums() throws SQLException {
-        return studentenOverzichtDao.getAllCriteriums();
+        return studentOverzichtDao.getAllCriteriums();
     }
 
     public List<KerntaaktDto> getAllKerntaken() throws SQLException {
-        return studentenOverzichtDao.getAllKerntaken();
+        return studentOverzichtDao.getAllKerntaken();
     }
 
     public CriteriumDto getCriteriumdetail(int criteriaId) throws SQLException {
-        return studentenOverzichtDao.getCriterium(criteriaId);
+        return studentOverzichtDao.getCriterium(criteriaId);
     }
 }

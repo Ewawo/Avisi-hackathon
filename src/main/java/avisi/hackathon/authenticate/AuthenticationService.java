@@ -35,6 +35,7 @@ public class AuthenticationService {
         String token = generateToken();
         loginResponse.setToken(token);
         authenticationDao.insertToken(email, token);
+        loginResponse.setRole(authenticationDao.getUser(token));
 
         return loginResponse;
     }

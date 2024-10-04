@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Repository
-public class StudentenOverzichtDao {
+public class StudentOverzichtDao {
 
 
     private DatabaseConnection databaseConnection = new DatabaseConnection();
@@ -22,7 +22,7 @@ public class StudentenOverzichtDao {
     public List<CriteriumDto> getAllCriteriums() throws SQLException {
         List<CriteriumDto> criteriums = new ArrayList<>();
         var newConnection = databaseConnection.getDatabaseConnection();
-        PreparedStatement statement = newConnection.prepareStatement("select * from criteria ");
+        PreparedStatement statement = newConnection.prepareStatement("select * from Criteria");
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             CriteriumDto criterium = new CriteriumDto();
